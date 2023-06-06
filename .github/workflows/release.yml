@@ -21,7 +21,6 @@ jobs:
           node-version: '14'
       - name: Install semver
         run: npm install --global semver
-
       - name: Determine version
         id: determine_version
         run: |
