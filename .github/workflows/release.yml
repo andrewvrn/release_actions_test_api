@@ -37,7 +37,7 @@ jobs:
       - name: Generate release notes
         id: generate_release_notes
         run: |
-          latest_tag=$(git describe --abbrev=0 --tags)
+          latest_tag=$(git describe --always --abbrev=0 --tags)
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           echo "release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')" >> $GITHUB_OUTPUT
 
