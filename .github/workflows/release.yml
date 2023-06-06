@@ -21,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 3
       - name: Determine version
         id: determine_version
         run: |
@@ -34,6 +34,7 @@ jobs:
             release_type="minor"
           fi
           echo "version=$(semver -i $release_type $latest_tag)" >> $GITHUB_OUTPUT
+          echo "release_type: $release_type latest_tag: $latest_tag)"
 
       - name: Generate release notes
         id: generate_release_notes
