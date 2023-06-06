@@ -21,10 +21,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 3
+          fetch-depth: 0
       - name: Determine version
         id: determine_version
         run: |
+          git fetch --depth=0 origin "+refs/tags/*:refs/tags/*"
           latest_tag=$(git describe --abbrev=0 --tags)
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_type="patch"
@@ -34,7 +35,6 @@ jobs:
             release_type="minor"
           fi
           echo "version=$(semver -i $release_type $latest_tag)" >> $GITHUB_OUTPUT
-          echo "release_type: $release_type latest_tag: $latest_tag)"
 
       - name: Generate release notes
         id: generate_release_notes
