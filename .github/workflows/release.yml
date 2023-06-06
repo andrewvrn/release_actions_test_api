@@ -1,0 +1,43 @@
+name: Create Release with Auto-generated Release Notes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Determine version
+        id: determine_version
+        run: |
+          latest_tag=$(git describe --abbrev=0 --tags)
+          commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
+          release_type="patch"
+          if echo "$commit_messages" | grep -E "(^BREAKING CHANGE)"; then
+            release_type="major"
+          elif echo "$commit_messages" | grep -E "(^feat)"; then
+            release_type="minor"
+          fi
+          echo "version=$(semver -i $release_type $latest_tag)" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: generate_release_notes
+        run: |
+          latest_tag=$(git describe --abbrev=0 --tags)
+          commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
+          echo "release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag -a v${{ steps.determine_version.outputs.version }} -m "${{ steps.generate_release_notes.outputs.notes }}"
+          git push origin v${{ steps.determine_version.outputs.version }}
