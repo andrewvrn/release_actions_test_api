@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -19,14 +17,14 @@ jobs:
           node-version: '14'
       - name: Install semver
         run: npm install --global semver
-        shell: bash
 
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Determine version
         id: determine_version
         run: |
-          echo "git_version=$(git version)" >> $GITHUB_OUTPUT
           git fetch --depth=1 origin "+refs/tags/*:refs/tags/*"
-          latest_tag=$(git describe --abbrev=0 --tags )
+          latest_tag=$(git describe --abbrev=0 --tags)
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_type="patch"
           if echo "$commit_messages" | grep -E "(^BREAKING CHANGE)"; then
