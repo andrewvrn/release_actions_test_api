@@ -24,7 +24,7 @@ jobs:
       - name: Determine version
         id: determine_version
         run: |
-          git fetch --depth=5 origin "+refs/tags/*:refs/tags/*"
+          git fetch origin "+refs/tags/*:refs/tags/*"
           latest_tag=$(git describe --abbrev=0 --tags)
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_type="patch"
