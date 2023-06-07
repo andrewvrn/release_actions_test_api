@@ -40,7 +40,8 @@ jobs:
         run: |
           latest_tag=$(git describe --abbrev=0 --tags)
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
-          echo "notes=$(echo "$commit_messages" | awk '{print "- " $0}')" >> $GITHUB_OUTPUT
+          release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')
+          echo "notes=$release_notes" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
