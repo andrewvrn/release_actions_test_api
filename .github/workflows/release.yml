@@ -46,7 +46,7 @@ jobs:
       - name: If release notes failure
         if: failure()
         run: |
-          tag_new=$(v${{ steps.determine_version.outputs.version }} | "v1.0.0")
+          tag_new=$(v${{ steps.determine_version.outputs.version }} | v1.0.0)
           git tag tag_new
           git push origin tag_new
 
