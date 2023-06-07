@@ -47,8 +47,12 @@ jobs:
         if: failure()
         run: |
           tag_new=$(v${{ steps.determine_version.outputs.version }} | v1.0.0)
-          git tag tag_new
-          git push origin tag_new
+          git tag $tag_new
+          git push origin $tag_new
+          latest_tag=${{ steps.determine_version.outputs.latest_tag }}
+          commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
+          release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')
+          echo "notes=$release_notes" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
