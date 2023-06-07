@@ -46,13 +46,7 @@ jobs:
       - name: If release notes failure
         if: failure()
         run: |
-          if [ "${{ steps.determine_version.outputs.version }}" != '' ]; then
-            tag_new=v${{ steps.determine_version.outputs.version }}
-          else
-            tag_new=v1.0.0
-          fi
-          git tag $tag_new
-          git push origin $tag_new
+          git fetch --depth=5 origin "+refs/tags/*:refs/tags/*"
           latest_tag=${{ steps.determine_version.outputs.latest_tag }}
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')
