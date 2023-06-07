@@ -26,6 +26,7 @@ jobs:
         id: determine_version
         run: |
           latest_tag=$(git describe --abbrev=0 --tags)
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_type="patch"
           if echo "$commit_messages" | grep -E "(^BREAKING CHANGE)"; then
@@ -38,10 +39,15 @@ jobs:
       - name: Generate release notes
         id: generate_release_notes
         run: |
-          latest_tag=$(git describe --abbrev=0 --tags)
+          latest_tag=${{ steps.determine_version.outputs.latest_tag }}
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')
           echo "notes=$release_notes" >> $GITHUB_OUTPUT
+      - name: If release notes failure
+        if: failure()
+        run: |
+          git tag v1.0.0
+          git push origin v1.0.0
 
       - name: Create Release
         id: create_release
