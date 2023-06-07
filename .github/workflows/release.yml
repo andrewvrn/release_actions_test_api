@@ -42,11 +42,6 @@ jobs:
           commit_messages=$(git log --pretty=format:"%s" ${latest_tag}..HEAD)
           release_notes=$(echo "$commit_messages" | awk '{print "- " $0}')
           echo "notes=$release_notes" >> $GITHUB_OUTPUT
-      - name: Create Release Notes
-        uses: docker://decathlon/release-notes-generator-action:2.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILENAME: ProvidedFilename
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
